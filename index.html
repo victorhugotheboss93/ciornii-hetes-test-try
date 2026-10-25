@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google-site-verification" content="_ob0-oeemaraqDbeUweh1NQw1XIawSZ0dS44O__onn4" />
+    <meta name="description" content="Catalin e negru - OUR HETES Version este un joc inceput din gluma unui coleg de clasa, avand mai multe moduri de joc, cum ar fi cu colectare aura, shooter Stalingrad sau multiplayer si cu geometry dash, si salvand progresul cu conturi. Te poti juca ca Hetes , marele nostru Ghidus, in mai multe moduri. Ataca fascistii, distruge capitalismul si instaureaza comunismul.  Acest joc nu promoveaza ideologii extremiste si dictatoriale! Joaca-te acum jocul nostru indie gratis Catalin e negru - OUR HETES Version THE GAME!" />
+    <meta name="robots" content="index, follow" />
+    <title>Catalin e negru - OUR HETES V3</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #111;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            display: block;
+            background: #222;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .dev-team {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            text-align: right;
+            font-weight: bold;
+            font-size: 18px;
+            color: #aaa;
+            line-height: 1.4;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .song-credit {
+            position: absolute;
+            bottom: 240px;
+            left: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #ffcc00;
+            background: rgba(0,0,0,0.6);
+            padding: 6px 10px;
+            border-radius: 4px;
+            border-left: 4px solid #cc0000;
+            pointer-events: none;
+            z-index: 11;
+        }
+
+        .auth-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 300px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 10px;
+            z-index: 20;
+            font-size: 13px;
+        }
+
+        .auth-container input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 6px;
+            background: #222;
+            border: 1px solid #555;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .auth-container input:focus {
+            border-color: #ffcc00;
+            outline: none;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 5px;
+        }
+
+        .auth-btn {
+            flex: 1;
+            padding: 8px;
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .auth-btn:hover {
+            background: #ffcc00;
+            color: black;
+            border-color: #ffcc00;
+        }
+
+        .auth-status {
+            text-align: center;
+            color: #aaa;
+            font-size: 11px;
+            margin-bottom: 5px;
+            word-break: break-all;
+        }
+
+        .name-section {
+            border-top: 1px solid #555;
+            padding-top: 10px;
+            margin-top: 5px;
+        }
+        
+        .locked-name {
+            text-align: center;
+            color: #2ecc71;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+            padding: 5px;
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid #2ecc71;
+            border-radius: 4px;
+        }
+
+        .menu-header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            width: 95%;
+            margin-bottom: 40px;
+        }
+
+        .title-area {
+            text-align: center;
+            min-width: 380px;
+        }
+
+        h1.main-title {
+            color: #ff0000;
+            font-size: 64px;
+            margin: 0;
+            text-shadow: 3px 3px 0px #000;
+            letter-spacing: 2px;
+        }
+
+        h2.subtitle {
+            color: #ffff00;
+            font-size: 28px;
+            margin: 5px 0 0 0;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .leaderboard-panel {
+            width: 420px;
+            height: 270px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ffcc00;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: left;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
+        }
+
+        .leaderboard-panel h3 {
+            margin: 0 0 6px 0;
+            color: #ffcc00;
+            border-bottom: 1px solid #444;
+            padding-bottom: 4px;
+            font-size: 15px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .leaderboard-tabs {
+            display: flex;
+            gap: 2px;
+            margin-bottom: 6px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 4px 1px;
+            font-size: 10px;
+            font-weight: bold;
+            background: #333;
+            color: #ccc;
+            border: 1px solid #555;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: #ffcc00;
+            color: #000;
+            border-color: #ffcc00;
+        }
+
+        .tab-content {
+            flex: 1;
+            overflow-y: auto;
+            line-height: 1.4;
+            color: #eee;
+            padding-right: 4px;
+        }
+
+        .update-log {
+            width: 340px;
+            height: 270px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 2px solid #555;
+            border-radius: 8px;
+            padding: 12px;
+            overflow-y: auto;
+            text-align: left;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .update-log h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #00ffcc;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .global-item {
+            display: flex;
+            justify-content: space-between;
+            background: #222;
+            margin-bottom: 4px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border-left: 3px solid #ffcc00;
+            font-size: 11px;
+        }
+        .global-item:nth-child(1) { border-color: #ffd700; background: rgba(255, 215, 0, 0.2); font-weight: bold;}
+        .global-item:nth-child(2) { border-color: #c0c0c0; background: rgba(192, 192, 192, 0.2); }
+        .global-item:nth-child(3) { border-color: #cd7f32; background: rgba(205, 127, 50, 0.2); }
+
+        .modes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 35px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background: #333;
+            color: white;
+            transition: all 0.2s;
+            min-width: 280px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            background: #444;
+        }
+
+        .btn-classic { border-left: 8px solid #00bcff; }
+        .btn-aura { border-left: 8px solid #ffcc00; }
+        .btn-shooter { border-left: 8px solid #e67e22; }
+        .btn-soviet { 
+            background: #cc0000 !important; 
+            color: #ffff00 !important;
+            border: 3px solid #ffff00;
+            box-shadow: 0 0 15px #ffcc00;
+            text-shadow: 1px 1px 0px #000;
+            border-left: 8px solid #ffff00;
+        }
+        .btn-back { background: #555; margin-top: 10px; font-size: 18px; padding: 10px 20px; }
+
+        .end-title {
+            font-size: 50px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+        .lose-screen .end-title { color: #ff3333; }
+        .win-screen .end-title { color: #33ff33; }
+
+        .btn-credits {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: bold;
+            background: #333;
+            color: #ffcc00;
+            border: 1px solid #ffcc00;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.2s;
+        }
+
+        .btn-credits:hover {
+            background: #ffcc00;
+            color: #000;
+        }
+
+        .credits-modal {
+            position: absolute;
+            bottom: 60px;
+            right: 20px;
+            width: 380px;
+            max-height: 480px;
+            background: rgba(0, 0, 0, 0.92);
+            border: 2px solid #ffcc00;
+            border-radius: 8px;
+            padding: 15px;
+            z-index: 30;
+            font-size: 12px;
+            line-height: 1.4;
+            box-shadow: 0 0 15px rgba(0,0,0,0.8);
+            overflow-y: auto;
+        }
+
+        .credits-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ffcc00;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        .credits-header h4 {
+            margin: 0;
+            color: #ffcc00;
+            font-size: 15px;
+        }
+
+        .close-credits {
+            background: transparent;
+            border: none;
+            color: #ffcc00;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .close-credits:hover {
+            color: #ff3333;
+        }
+
+        .credits-section {
+            margin-bottom: 12px;
+        }
+
+        .credits-section-title {
+            color: #00ffcc;
+            font-weight: bold;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        #mobile-controls {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+        .mob-btn {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            color: white;
+            font-weight: bold;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto;
+            user-select: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            font-size: 22px;
+        }
+        .mob-btn:active, .mob-btn.pressed {
+            background: rgba(255, 204, 0, 0.6);
+            border-color: #ffcc00;
+            transform: scale(0.95);
+        }
+        #mob-back-menu {
+            top: 15px;
+            left: 15px;
+            width: 90px;
+            height: 45px;
+            font-size: 13px;
+            background: rgba(192, 57, 43, 0.8);
+            border-color: #e74c3c;
+            z-index: 105;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <canvas id="gameCanvas" width="1280" height="720"></canvas>
+
+    <div id="mobile-controls">
+        <button id="mob-back-menu" class="mob-btn" onclick="backToMain()">Meniu</button>
+        
+        <div id="mob-classic-controls" class="hidden">
+            <button id="mob-classic-jump" class="mob-btn" style="bottom: 30px; right: 30px; width: 110px; height: 110px; border-radius: 50%; font-size: 20px; background: rgba(0,188,212,0.4);">SARI</button>
+        </div>
+
+        <div id="mob-aura-controls" class="hidden">
+            <div style="position: absolute; bottom: 25px; left: 25px; width: 170px; height: 170px;">
+                <button id="mob-aura-up" class="mob-btn" style="top: 0; left: 60px; width: 55px; height: 55px;">▲</button>
+                <button id="mob-aura-down" class="mob-btn" style="bottom: 0; left: 60px; width: 55px; height: 55px;">▼</button>
+                <button id="mob-aura-left" class="mob-btn" style="top: 60px; left: 0; width: 55px; height: 55px;">◄</button>
+                <button id="mob-aura-right" class="mob-btn" style="top: 60px; right: 0; width: 55px; height: 55px;">►</button>
+            </div>
+        </div>
+
+        <div id="mob-shooter-controls" class="hidden">
+            <div style="position: absolute; bottom: 25px; left: 25px; width: 170px; height: 170px;">
+                <button id="mob-sh-w" class="mob-btn" style="top: 0; left: 60px; width: 55px; height: 55px;">▲</button>
+                <button id="mob-sh-s" class="mob-btn" style="bottom: 0; left: 60px; width: 55px; height: 55px;">▼</button>
+                <button id="mob-sh-a" class="mob-btn" style="top: 60px; left: 0; width: 55px; height: 55px;">◄</button>
+                <button id="mob-sh-d" class="mob-btn" style="top: 60px; right: 0; width: 55px; height: 55px;">►</button>
+            </div>
+            
+            <button id="mob-sh-fire" class="mob-btn" style="bottom: 30px; right: 30px; width: 100px; height: 100px; border-radius: 50%; background: rgba(200,0,0,0.5); border-color:#ff3333; font-size:16px;">TRAGE</button>
+            <button id="mob-sh-ability" class="mob-btn" style="bottom: 145px; right: 30px; width: 75px; height: 75px; border-radius: 50%; background: rgba(255,204,0,0.4); border-color:#ffcc00; font-size:13px;">ABIL</button>
+            <button id="mob-sh-katyusha" class="mob-btn" style="bottom: 145px; right: 115px; width: 75px; height: 75px; border-radius: 50%; background: rgba(0,255,204,0.4); border-color:#00ffcc; font-size:11px; display:none;">KATY</button>
+        </div>
+    </div>
+
+    <div id="main-menu" class="screen">
+        <div class="dev-team">
+            Developing team:<br>
+            Tovarisch Gabi<br>
+            Robert<br>
+            Hetes Gydus
+        </div>
+
+        <div class="song-credit">
+            День Победы - Ayden George remix
+        </div>
+
+        <div class="auth-container" id="auth-panel">
+            <div id="auth-logged-out">
+                <input type="email" id="auth-email" placeholder="Email...">
+                <input type="password" id="auth-password" placeholder="Parolă...">
+                <div class="auth-buttons">
+                    <button class="auth-btn" id="btn-login">Logare</button>
+                    <button class="auth-btn" id="btn-register">Înregistrare</button>
+                </div>
+            </div>
+            
+            <div id="auth-logged-in" class="hidden">
+                <div class="auth-status" id="user-status-text">Cont: -</div>
+                
+                <div class="name-section">
+                    <div id="locked-name-display" class="locked-name hidden">Nume în joc: Anonim</div>
+                    <input type="text" id="auth-display-name" placeholder="Numele tău (se setează o singură dată!)" maxlength="15">
+                    <button class="auth-btn" id="btn-set-name" style="width:100%; margin-bottom:10px;">Salvează Numele</button>
+                </div>
+
+                <button class="auth-btn" id="btn-logout" style="width:100%; background: #c0392b; border-color: #e74c3c;">Deconectare</button>
+            </div>
+        </div>
+        
+        <div class="menu-header-container">
+            <div class="leaderboard-panel">
+                <h3>Leaderboard</h3>
+                <div class="leaderboard-tabs">
+                    <button id="tab-personal" class="tab-btn active" onclick="window.switchLeaderboardTab('personal')">Scorul Meu</button>
+                    <button id="tab-general" class="tab-btn" onclick="window.switchLeaderboardTab('general')">General</button>
+                    <button id="tab-clasic" class="tab-btn" onclick="window.switchLeaderboardTab('clasic')">Clasic</button>
+                    <button id="tab-aura" class="tab-btn" onclick="window.switchLeaderboardTab('aura')">Aura</button>
+                    <button id="tab-shooter" class="tab-btn" onclick="window.switchLeaderboardTab('shooter')">Shooter</button>
+                    <button id="tab-gulag" class="tab-btn" onclick="window.switchLeaderboardTab('gulag')">Gulag</button>
+                </div>
+                <div id="leaderboard-content" class="tab-content"></div>
+            </div>
+
+            <div class="title-area">
+                <h1 class="main-title">Catalin e negru</h1>
+                <h2 class="subtitle">OUR HETES VERSION V3</h2>
+            </div>
+            
+            <div class="update-log">
+                <h3>Update Log</h3>
+                <strong>V3: Modul Gulag Escape</strong><br>
+                • harta 3D cu tuneluri<br>
+                • AI NKVD care te cauta<br>
+                • system de interactionare cu obiectele<br><br>
+                <strong>V2.6: Update la skinuri shooter</strong><br>
+                • skinurile have abilitati diversificate<br>
+                • Gopnik are music player<br>
+                • repararea problemelor la skinuri<br><br>
+                <strong>V2.5: Modul Shooter Multiplayer</strong><br>
+                • acum sunt 2 moduri shooter: Stalingrad si Multiplayer<br>
+                • Free For All sau team<br>
+                • skinuri cu abilitati<br>
+                • arme noi<br><br>
+                <strong>V2: Modul Shooter</strong><br>
+                • harta Stalingrad 3d<br>
+                • inamici fascisti<br><br>
+                <strong>V1.1: Sistem Cloud</strong><br>
+                • Sincornizare cont cu progress<br>
+                • Leaderboard TOP 100 live<br><br>
+                <strong>V1: Lansare</strong><br>
+                • Modul clasic<br>
+                &nbsp;&nbsp;4 moduri de dificultate<br>
+                &nbsp;&nbsp;epic joe metri desh<br>
+                • Modul Aura Hetes<br>
+                &nbsp;&nbsp;colectare aura<br>
+                &nbsp;&nbsp;inamici fascisti si boss
+            </div>
+        </div>
+
+        <div class="modes-list">
+            <button class="btn btn-classic" onclick="openClassicMenu()">Modul Clasic</button>
+            <button class="btn btn-aura" onclick="startAuraMode()">Modul Aura Hetes</button>
+            <button class="btn btn-shooter" onclick="if(window.openShooterMenu) window.openShooterMenu()">Modul Shooter</button>
+            <button id="btn-gulag-escape" class="btn btn-soviet" onclick="window.startGulagSession()">Modul Gulag Escape</button>
+        </div>
+
+        <button class="btn-credits" onclick="toggleCredits()">Credite</button>
+        <div id="credits-modal" class="credits-modal hidden">
+            <div class="credits-header">
+                <h4>Credite</h4>
+                <button class="close-credits" onclick="toggleCredits()">X</button>
+            </div>
+            <div class="credits-section">
+                <div class="credits-section-title">Contribuitori și echipa:</div>
+                <div><strong>Tovarisch Gabi</strong> - editeaza, face update, adauga functii noi importante;</div>
+                <div>- a avut ideea de a face si el un joc , fiind inspirat de jocul lui B. Rares;</div>
+                <div><strong>Robert</strong> - idei peak ;</div>
+                <div><strong>B. Rares</strong> - a facut jocul original si a avut ideea acestui joc numit "Catalin e negru" ;</div>
+                <div><strong>Hetes Gydus</strong> - a avut ideea de a reface jocul (si a cerut update);</div>
+                <div>-jocul este de fapt mai mult bazat pe el;</div>
+                <div><strong>Catalin</strong> - numele este al lui si va aparea in curand el in joc</div>
+            </div>
+            <div class="credits-section" style="margin-top: 15px;">
+                <div>Патриотическая песня - Forte Republic - Sovietwave Remix (Modul Gulag)</div>
+                <br>
+                <div class="credits-section-title">Music player Gopnik Hardbass</div>
+                <div>Наш гимн - Hard Bass School</div>
+                <div>Триполоски - Davay</div>
+                <div>Cheeki Breeki Hardbass Anthem - apartje</div>
+                <div>Kalinka Hardbass Remix - DJ Bonebreaker</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="classic-menu" class="screen hidden">
+        <div class="song-credit" style="bottom: 20px;">
+            День Победы - Ayden George remix
+        </div>
+
+        <div class="menu-header-container">
+            <div class="title-area">
+                <h1 class="main-title" style="font-size: 50px;">Modul Clasic</h1>
+            </div>
+        </div>
+        <div class="modes-list">
+            <button class="btn btn-easy" onclick="startClassicMode('easy')">Ușor</button>
+            <button class="btn btn-medium" onclick="startClassicMode('medium')">Mediu</button>
+            <button class="btn btn-hard" onclick="startClassicMode('hard')">Greu</button>
+            <button class="btn btn-soviet" onclick="startClassicMode('soviet')">Sovietic</button>
+            <button class="btn btn-back" onclick="backToMain()">Inapoi la meniu</button>
+        </div>
+    </div>
+
+    <div id="lose-screen" class="screen hidden lose-screen">
+        <div id="lose-message" class="end-title">Rușine rasistule</div>
+        <button class="btn btn-back" onclick="backToMain()">Inapoi la meniu</button>
+    </div>
+
+    <div id="win-screen" class="screen hidden win-screen">
+        <div id="win-message" class="end-title">Absolute cinema</div>
+        <button class="btn btn-back" onclick="backToMain()">Inapoi la meniu</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, limit, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBi6SRrKBTYuBU7RW0gEkUHDVhSgW0wQPk",
+        authDomain: "catalin-e-negru---our-hetes.firebaseapp.com",
+        projectId: "catalin-e-negru---our-hetes",
+        storageBucket: "catalin-e-negru---our-hetes.firebasestorage.app",
+        messagingSenderId: "519846642889",
+        appId: "1:519846642889:web:2cbcaea99b96f15e27b918"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app); 
+
+    const emailInput = document.getElementById('auth-email');
+    const passwordInput = document.getElementById('auth-password');
+    const btnLogin = document.getElementById('btn-login');
+    const btnRegister = document.getElementById('btn-register');
+    const btnLogout = document.getElementById('btn-logout');
+    
+    const loggedOutDiv = document.getElementById('auth-logged-out');
+    const loggedInDiv = document.getElementById('auth-logged-in');
+    const userStatusText = document.getElementById('user-status-text');
+    
+    const displayNameInput = document.getElementById('auth-display-name');
+    const btnSetName = document.getElementById('btn-set-name');
+    const lockedNameDisplay = document.getElementById('locked-name-display');
+
+    window.globalUsersList = [];
+    window.currentUserDisplayName = "Anonim";
+
+    function updateNameUI(nameSet) {
+        if (nameSet && nameSet !== "Anonim") {
+            displayNameInput.classList.add('hidden');
+            btnSetName.classList.add('hidden');
+            lockedNameDisplay.innerText = `Nume în joc: ${nameSet}`;
+            lockedNameDisplay.classList.remove('hidden');
+        } else {
+            lockedNameDisplay.classList.add('hidden');
+            displayNameInput.value = "";
+            displayNameInput.classList.remove('hidden');
+            btnSetName.classList.remove('hidden');
+        }
+    }
+
+    async function loadPersonalStatsFromCloud(uid) {
+        try {
+            const docRef = doc(db, "users", uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                window.currentUserDisplayName = data.displayName || "Anonim";
+                updateNameUI(data.displayName);
+                
+                if(data.stats) {
+                    if(data.stats.auraRecord > window.gameStats.auraRecord) window.gameStats.auraRecord = data.stats.auraRecord;
+                    if(data.stats.auraCompletions > window.gameStats.auraCompletions) window.gameStats.auraCompletions = data.stats.auraCompletions;
+                    ['easy', 'medium', 'hard', 'soviet'].forEach(diff => {
+                        if(data.stats.classicCompletions && data.stats.classicCompletions[diff] > window.gameStats.classicCompletions[diff]) {
+                            window.gameStats.classicCompletions[diff] = data.stats.classicCompletions[diff];
+                        }
+                    });
+                    if(data.stats.gulagEscapes && window.gameStats.gulagEscapes) window.gameStats.gulagEscapes = data.stats.gulagEscapes;
+                    if (data.stats.shooter && window.mergeShooterStats) window.mergeShooterStats(data.stats.shooter);
+                    localStorage.setItem('catalin_game_stats', JSON.stringify(window.gameStats));
+                }
+            } else {
+                window.currentUserDisplayName = "Anonim";
+                updateNameUI(null);
+            }
+            window.updateLeaderboardUI();
+        } catch(e) { console.error("Eroare încărcare profil", e); }
+    }
+
+    window.syncStatsToCloud = async function() {
+        if (!auth.currentUser) return;
+        try {
+            let stats = window.gameStats;
+            let calculatedTotalScore = (stats.auraRecord || 0) * 10 + 
+                                       (stats.classicCompletions.easy || 0) * 50 +
+                                       (stats.classicCompletions.medium || 0) * 150 +
+                                       (stats.classicCompletions.hard || 0) * 350 +
+                                       (stats.classicCompletions.soviet || 0) * 1000 +
+                                       (stats.auraCompletions || 0) * 500 + 
+                                       (stats.gulagEscapes || 0) * 600 +
+                                       ((stats.shooter && stats.shooter.score) || 0);
+
+            await setDoc(doc(db, "users", auth.currentUser.uid), {
+                email: auth.currentUser.email,
+                displayName: window.currentUserDisplayName,
+                stats: window.gameStats,
+                totalScore: calculatedTotalScore
+            }, { merge: true });
+            
+            window.fetchGlobalLeaderboard();
+        } catch(e) { console.error("Eroare salvare cloud", e); }
+    };
+
+    window.fetchGlobalLeaderboard = async function() {
+        try {
+            const q = query(collection(db, "users"), limit(100));
+            const querySnapshot = await getDocs(q);
+            window.globalUsersList = [];
+            
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                if(data.displayName && data.displayName !== "Anonim") {
+                    let eW = data.stats?.classicCompletions?.easy || 0;
+                    let mW = data.stats?.classicCompletions?.medium || 0;
+                    let hW = data.stats?.classicCompletions?.hard || 0;
+                    let sW = data.stats?.classicCompletions?.soviet || 0;
+                    let totalClassicWins = eW + mW + hW + sW;
+                    let aRec = data.stats?.auraRecord || 0;
+                    let aComp = data.stats?.auraCompletions || 0;
+                    let gEsc = data.stats?.gulagEscapes || 0;
+                    let calcTotal = (aRec * 10) + (eW * 50) + (mW * 150) + (hW * 350) + (sW * 1000) + (aComp * 500) + (gEsc * 600) + (data.stats?.shooter?.score || 0);
+
+                    window.globalUsersList.push({
+                        name: data.displayName,
+                        totalScore: data.totalScore || calcTotal,
+                        auraRec: aRec,
+                        classicWins: totalClassicWins,
+                        gulagEscapes: gEsc,
+                        shooterScore: data.stats?.shooter?.score || 0
+                    });
+                }
+            });
+            window.updateLeaderboardUI();
+        } catch (e) { console.error("Eroare fetch Top", e); }
+    };
+
+    btnSetName.addEventListener('click', async () => {
+        const newName = displayNameInput.value.trim();
+        if (!newName) return alert("Introdu un nume!");
+        if (newName.length < 3 || newName.length > 15) return alert("Numele trebuie să aibă între 3 și 15 caractere!");
+        
+        btnSetName.innerText = "Verificare...";
+        btnSetName.disabled = true;
+
+        try {
+            const q = query(collection(db, "users"), where("displayName", "==", newName));
+            const snap = await getDocs(q);
+            let isTaken = false;
+            snap.forEach(d => { if(d.id !== auth.currentUser.uid) isTaken = true; });
+
+            if(isTaken) {
+                alert("Acest nume este deja folosit! Alege altul.");
+            } else {
+                window.currentUserDisplayName = newName;
+                await window.syncStatsToCloud();
+                updateNameUI(newName); 
+                alert("Nume salvat cu succes! Acum este blocat.");
+            }
+        } catch(e) { alert("Eroare la conectarea cu baza de date."); }
+
+        btnSetName.innerText = "Salvează Numele";
+        btnSetName.disabled = false;
+    });
+
+    btnRegister.addEventListener('click', () => {
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        if(!email || !password) return alert("Introdu email și parolă!");
+        createUserWithEmailAndPassword(auth, email, password)
+            .then(() => alert("Cont creat! Acum alege-ți un nume de joc."))
+            .catch((error) => alert("Eroare înregistrare: " + error.message));
+    });
+
+    btnLogin.addEventListener('click', () => {
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        if(!email || !password) return alert("Introdu email și parolă!");
+        signInWithEmailAndPassword(auth, email, password)
+            .catch((error) => alert("Eroare logare: Verifică datele."));
+    });
+
+    btnLogout.addEventListener('click', () => {
+        signOut(auth).then(() => {
+            window.currentUserDisplayName = "Anonim";
+            updateNameUI(null);
+            window.updateLeaderboardUI();
+        });
+    });
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            loggedOutDiv.classList.add('hidden');
+            loggedInDiv.classList.remove('hidden');
+            userStatusText.innerText = `Cont conectat: ${user.email}`;
+            loadPersonalStatsFromCloud(user.uid);
+        } else {
+            loggedInDiv.classList.add('hidden');
+            loggedOutDiv.classList.remove('hidden');
+            userStatusText.innerText = "Cont: -";
+        }
+    });
+    window.fetchGlobalLeaderboard();
+
+    window.db = db; window.auth = auth;
+    window.fsDoc = doc; window.fsSetDoc = setDoc;
+    window.fsCollection = collection; window.fsOnSnapshot = onSnapshot; window.fsDeleteDoc = deleteDoc;
+</script>
+
+<script>
+    // Script de siguranță pentru a menține un singur buton de Shooter exact înainte de Gulag
+    document.addEventListener("DOMContentLoaded", () => {
+        const modesList = document.querySelector('.modes-list');
+        if (!modesList) return;
+        
+        const gulagBtn = document.getElementById('btn-gulag-escape');
+        const shooterBtns = Array.from(modesList.querySelectorAll('button')).filter(b => 
+            b.textContent.toLowerCase().includes('shooter') && b.id !== 'btn-gulag-escape'
+        );
+
+        if (shooterBtns.length > 1) {
+            for (let i = 1; i < shooterBtns.length; i++) {
+                shooterBtns[i].remove();
+            }
+        }
+
+        if (shooterBtns.length > 0 && gulagBtn) {
+            modesList.insertBefore(shooterBtns[0], gulagBtn);
+        }
+    });
+
+    const observer = new MutationObserver(() => {
+        const modesList = document.querySelector('.modes-list');
+        if (!modesList) return;
+        const gulagBtn = document.getElementById('btn-gulag-escape');
+        const shooterBtns = Array.from(modesList.querySelectorAll('button')).filter(b => 
+            b.textContent.toLowerCase().includes('shooter') && b.id !== 'btn-gulag-escape'
+        );
+
+        if (shooterBtns.length > 1) {
+            for (let i = 1; i < shooterBtns.length; i++) {
+                shooterBtns[i].remove();
+            }
+        }
+        if (shooterBtns.length > 0 && gulagBtn && shooterBtns[0].nextElementSibling !== gulagBtn) {
+            modesList.insertBefore(shooterBtns[0], gulagBtn);
+        }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const bossLeftImg = new Image(); bossLeftImg.src = 'boss_left.png';
+    const bossRightImg = new Image(); bossRightImg.src = 'boss_right.png';
+
+    const sndMenu = new Audio('Victory Day - Ayden George Remix.mp3'); sndMenu.loop = true;
+    const sndUssrWin = new Audio('ussrmus.mp3'); sndUssrWin.loop = true;
+    const sndJump = new Audio('clasic-jump.mp3');
+    const sndGun = new Audio('gun.mp3');
+    const sndNaziRifle = new Audio('nazi rifle.mp3');
+    const sndExplosionRocket = new Audio('st explosion sound6.mp3');
+    const sndDeath = new Audio('st explosion sound2.mp3');
+
+    window.sndStalingradBgm = new Audio('svoina.mp3');
+    window.sndStalingradBgm.loop = true;
+    window.sndStalingradBgm.volume = 0.8;
+
+    window.gameStats = {
+        classicCompletions: { easy: 0, medium: 0, hard: 0, soviet: 0 },
+        auraCompletions: 0,
+        auraRecord: 0,
+        gulagEscapes: 0
+    };
+
+    if (localStorage.getItem('catalin_game_stats')) {
+        try { window.gameStats = JSON.parse(localStorage.getItem('catalin_game_stats')); } catch(e) {}
+    }
+
+    let currentLeaderboardTab = 'personal';
+
+    function saveStats() {
+        localStorage.setItem('catalin_game_stats', JSON.stringify(window.gameStats));
+        if (window.syncStatsToCloud) window.syncStatsToCloud();
+    }
+
+    function toggleCredits() {
+        const modal = document.getElementById('credits-modal');
+        modal.classList.toggle('hidden');
+    }
+
+    window.switchLeaderboardTab = function(tab) {
+        currentLeaderboardTab = tab;
+        document.getElementById('tab-general').classList.toggle('active', tab === 'general');
+        document.getElementById('tab-clasic').classList.toggle('active', tab === 'clasic');
+        document.getElementById('tab-aura').classList.toggle('active', tab === 'aura');
+        document.getElementById('tab-shooter').classList.toggle('active', tab === 'shooter');
+        document.getElementById('tab-gulag').classList.toggle('active', tab === 'gulag');
+        document.getElementById('tab-personal').classList.toggle('active', tab === 'personal');
+        window.updateLeaderboardUI();
+    }
+
+    window.updateLeaderboardUI = function() {
+        const content = document.getElementById('leaderboard-content');
+        if (currentLeaderboardTab === 'personal') {
+            content.innerHTML = `
+                <strong style="color:#00ffcc">Numele tău: ${window.currentUserDisplayName || "Neresetat"}</strong><hr style="border:0; border-top:1px solid #444; margin:5px 0;">
+                <div style="display:flex; justify-content:space-between; font-size:11px;">
+                    <div>
+                        <strong>Clasic:</strong><br>
+                        • Ușor: ${window.gameStats.classicCompletions.easy || 0}<br>
+                        • Mediu: ${window.gameStats.classicCompletions.medium || 0}<br>
+                        • Greu: ${window.gameStats.classicCompletions.hard || 0}<br>
+                        • <span style="color:#ff3333">Sovietic: ${window.gameStats.classicCompletions.soviet || 0}</span>
+                    </div>
+                    <div>
+                        <strong>Aura & Gulag:</strong><br>
+                        • Aura Victorii: ${window.gameStats.auraCompletions || 0}<br>
+                        • Record Aură: ${window.gameStats.auraRecord || 0}<br>
+                        • <span style="color:#ffcc00">Gulag Evadări: ${window.gameStats.gulagEscapes || 0}</span>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        if (!window.globalUsersList || window.globalUsersList.length === 0) {
+            content.innerHTML = `<div style="text-align:center; margin-top:20px; color:#aaa;">Se încarcă Top...</div>`;
+            return;
+        }
+
+        let sortedList = [...window.globalUsersList];
+        let htmlStr = ``;
+        if (currentLeaderboardTab === 'general') {
+            sortedList.sort((a, b) => b.totalScore - a.totalScore);
+            sortedList.forEach((player, index) => {
+                htmlStr += `<div class="global-item"><span style="min-width: 120px;">#${index + 1} <strong>${player.name}</strong></span><span>Scor Total: <strong style="color:#00ffcc">${player.totalScore}</strong></span></div>`;
+            });
+        } else if (currentLeaderboardTab === 'clasic') {
+            sortedList.sort((a, b) => b.classicWins - a.classicWins);
+            sortedList.forEach((player, index) => {
+                htmlStr += `<div class="global-item"><span>#${index + 1} <strong>${player.name}</strong></span><span>Total Victorii: <strong style="color:#00bcff">${player.classicWins}</strong></span></div>`;
+            });
+        } else if (currentLeaderboardTab === 'aura') {
+            sortedList.sort((a, b) => b.auraRec - a.auraRec);
+            sortedList.forEach((player, index) => {
+                htmlStr += `<div class="global-item"><span>#${index + 1} <strong>${player.name}</strong></span><span>Record Aură: <strong style="color:#ffcc00">${player.auraRec}</strong></span></div>`;
+            });
+        } else if (currentLeaderboardTab === 'shooter') {
+            sortedList.sort((a, b) => b.shooterScore - a.shooterScore);
+            sortedList.forEach((player, index) => {
+                htmlStr += `<div class="global-item"><span>#${index + 1} <strong>${player.name}</strong></span><span>Scor Shooter: <strong style="color:#e67e22">${player.shooterScore}</strong></span></div>`;
+            });
+        } else if (currentLeaderboardTab === 'gulag') {
+            sortedList.sort((a, b) => b.gulagEscapes - a.gulagEscapes);
+            sortedList.forEach((player, index) => {
+                htmlStr += `<div class="global-item"><span>#${index + 1} <strong>${player.name}</strong></span><span>Evadări Gulag: <strong style="color:#ff3333">${player.gulagEscapes}</strong></span></div>`;
+            });
+        }
+        content.innerHTML = htmlStr || `<div style="text-align:center; margin-top:20px; color:#aaa;">Fără scoruri.</div>`;
+    }
+
+    window.updateLeaderboardUI();
+
+    window.addEventListener('click', () => {
+        if (currentMode === 'NONE' && sndMenu.paused && sndUssrWin.paused) {
+            sndMenu.play().catch(e => {});
+        }
+    }, { once: false });
+
+    function playMenuMusic() {
+        sndUssrWin.pause(); sndUssrWin.currentTime = 0;
+        if(window.sndStalingradBgm) { window.sndStalingradBgm.pause(); window.sndStalingradBgm.currentTime = 0; }
+        sndMenu.play().catch(e => {});
+    }
+    function stopMenuMusic() { 
+        sndMenu.pause(); sndMenu.currentTime = 0; 
+        if(window.sndStalingradBgm) { window.sndStalingradBgm.pause(); window.sndStalingradBgm.currentTime = 0; }
+    }
+
+    function play8BitPickupSound() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1100, audioCtx.currentTime + 0.12);
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.12);
+        } catch(e) {}
+    }
+
+    const loseMessages = ["Rusine rasistule", "Bociorrt", "Tutti Frutti Francescutii", "Skill issue", "Capitalism has won...", "Mergi in GULAG!"];
+    const winMessages = ["Absolute cinema", "BINEEEH", "10 OUT OF 10", "THE MOTHERLAND IS PROUD OF YOU!", "Stalin te saluta ;)"];
+
+    let currentMode = 'NONE'; 
+    let gameActive = false;
+    let keys = {};
+    window.keys = keys;
+    let lastTime = 0;
+
+    let player = {}; let obstacles = []; let auraOrbs = []; let enemies = [];
+    let enemyBullets = []; let boss = null; let bossRockets = []; let visualEffects = [];
+
+    let totalObstaclesNeeded = 50; let obstaclesPassed = 0; let classicSpeed = 10;
+    let finishLineX = 0; let classicFinished = false; let currentDifficulty = 'easy';
+
+    let auraTimer = 30; let auraOrbsCollected = 0; let fascistSpawnTimer = 0;
+
+    window.addEventListener('keydown', (e) => {
+        keys[e.key.toLowerCase()] = true; keys[e.code] = true;
+        if (currentMode === 'CLASSIC' && gameActive) {
+            if (e.key === 'w' || e.key === ' ' || e.key === 'ArrowUp') triggerClassicJump();
+        }
+    });
+    window.addEventListener('keyup', (e) => {
+        keys[e.key.toLowerCase()] = false; keys[e.code] = false;
+    });
+    canvas.addEventListener('mousedown', () => {
+        if (currentMode === 'CLASSIC' && gameActive) triggerClassicJump();
+    });
+
+    function openClassicMenu() {
+        document.getElementById('main-menu').classList.add('hidden');
+        document.getElementById('classic-menu').classList.remove('hidden');
+        document.getElementById('auth-panel').classList.add('hidden'); 
+        playMenuMusic();
+    }
+
+    function backToMain() {
+        currentMode = 'NONE'; gameActive = false;
+        document.getElementById('classic-menu').classList.add('hidden');
+        document.getElementById('lose-screen').classList.add('hidden');
+        document.getElementById('win-screen').classList.add('hidden');
+        document.getElementById('main-menu').classList.remove('hidden');
+        document.getElementById('auth-panel').classList.remove('hidden'); 
+        
+        document.getElementById('mobile-controls').style.display = 'none';
+        document.getElementById('mob-classic-controls').classList.add('hidden');
+        document.getElementById('mob-aura-controls').classList.add('hidden');
+        document.getElementById('mob-shooter-controls').classList.add('hidden');
+
+        window.updateLeaderboardUI();
+        if(window.fetchGlobalLeaderboard) window.fetchGlobalLeaderboard(); 
+        playMenuMusic();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    window.backToMain = backToMain;
+
+    function hideAllMenus() {
+        document.getElementById('main-menu').classList.add('hidden');
+        document.getElementById('classic-menu').classList.add('hidden');
+        document.getElementById('lose-screen').classList.add('hidden');
+        document.getElementById('win-screen').classList.add('hidden');
+        document.getElementById('auth-panel').classList.add('hidden');
+    }
+
+    function showLoseScreen() {
+        gameActive = false; stopMenuMusic(); sndUssrWin.pause();
+        document.getElementById('mobile-controls').style.display = 'none';
+        if (currentMode === 'AURA') {
+            if (auraOrbsCollected > window.gameStats.auraRecord) window.gameStats.auraRecord = auraOrbsCollected;
+            saveStats();
+        }
+        sndDeath.currentTime = 0; sndDeath.play().catch(e=>e);
+        document.getElementById('lose-message').innerText = loseMessages[Math.floor(Math.random() * loseMessages.length)];
+        document.getElementById('lose-screen').classList.remove('hidden');
+    }
+    window.showLoseScreen = showLoseScreen;
+
+    function showWinScreen() {
+        gameActive = false; stopMenuMusic();
+        document.getElementById('mobile-controls').style.display = 'none';
+        if (currentMode === 'CLASSIC') {
+            window.gameStats.classicCompletions[currentDifficulty]++;
+            saveStats();
+        } else if (currentMode === 'AURA') {
+            window.gameStats.auraCompletions++;
+            if (auraOrbsCollected > window.gameStats.auraRecord) window.gameStats.auraRecord = auraOrbsCollected;
+            saveStats();
+        } else if (currentMode === 'GULAG') {
+            window.gameStats.gulagEscapes++;
+            saveStats();
+        }
+        sndUssrWin.currentTime = 0; sndUssrWin.play().catch(e=>e);
+        document.getElementById('win-message').innerText = winMessages[Math.floor(Math.random() * winMessages.length)];
+        document.getElementById('win-screen').classList.remove('hidden');
+    }
+    window.showWinScreen = showWinScreen;
+
+    function startClassicMode(difficulty) {
+        hideAllMenus(); stopMenuMusic();
+        currentMode = 'CLASSIC'; currentDifficulty = difficulty;
+        gameActive = true; classicFinished = false; obstaclesPassed = 0; obstacles = [];
+        setupMobileUI('classic');
+
+        classicSpeed = 10; let minGap = 0;
+        if (difficulty === 'easy') { totalObstaclesNeeded = 20; minGap = 500; }
+        else if (difficulty === 'medium') { totalObstaclesNeeded = 35; minGap = 350; }
+        else if (difficulty === 'hard') { totalObstaclesNeeded = 50; minGap = 250; }
+        else if (difficulty === 'soviet') { totalObstaclesNeeded = 91; minGap = 340; }
+
+        player = { x: 200, y: 500, width: 40, height: 40, vy: 0, gravity: 1.5, jumpForce: -21, isGrounded: false };
+
+        let currentX = 600;
+        for (let i = 0; i < totalObstaclesNeeded; i++) {
+            currentX += minGap + Math.random() * (minGap * 0.4); 
+            let type = (difficulty === 'easy') ? 0 : Math.floor(Math.random() * 3);
+            obstacles.push({ x: currentX, type: type, width: 30, height: 40, passed: false });
+        }
+        finishLineX = currentX + 500;
+        lastTime = performance.now();
+        requestAnimationFrame(gameLoop);
+    }
+
+    function triggerClassicJump() {
+        if (player.isGrounded) {
+            player.vy = player.jumpForce; player.isGrounded = false;
+            sndJump.currentTime = 0; sndJump.play().catch(e=>e);
+        }
+    }
+
+    function updateClassic(dt) {
+        player.vy += player.gravity; player.y += player.vy;
+        const groundY = 550 - player.height;
+        if (player.y >= groundY) { player.y = groundY; player.vy = 0; player.isGrounded = true; }
+
+        obstacles.forEach(obs => {
+            obs.x -= classicSpeed;
+            if (obs.type === 0 || obs.type === 2) { 
+                if (checkCollision(player, { x: obs.x, y: 550 - 40, width: obs.width, height: 40 })) showLoseScreen();
+                if (obs.type === 2) { 
+                    if (checkCollision(player, { x: obs.x + 30, y: 550 - 40, width: obs.width, height: 40 })) showLoseScreen();
+                }
+            } else if (obs.type === 1) { 
+                if (checkCollision(player, { x: obs.x, y: 550 - 40, width: 40, height: 40 })) showLoseScreen();
+            }
+
+            if (!obs.passed && obs.x < player.x) { obs.passed = true; obstaclesPassed++; }
+        });
+
+        finishLineX -= classicSpeed;
+        if (finishLineX <= player.x && !classicFinished) { classicFinished = true; showWinScreen(); }
+    }
+
+    function drawClassic() {
+        ctx.fillStyle = '#1e272e'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#05c46b'; ctx.fillRect(0, 550, canvas.width, canvas.height - 550);
+        ctx.fillStyle = '#04a758'; ctx.fillRect(0, 550, canvas.width, 10);
+
+        ctx.save();
+        ctx.translate(player.x + player.width/2, player.y + player.height/2);
+        ctx.fillStyle = '#2ecc71'; ctx.beginPath(); ctx.arc(0, 0, player.width/2, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#27ae60'; ctx.lineWidth = 3; ctx.stroke();
+        ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(-8, -4, 5, 0, Math.PI*2); ctx.arc(8, -4, 5, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = 'black'; ctx.beginPath(); ctx.arc(-8, -4, 2, 0, Math.PI*2); ctx.arc(8, -4, 2, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#333'; ctx.fillRect(-22, -24, 44, 10); ctx.fillRect(-15, -28, 30, 6);
+        ctx.restore();
+
+        obstacles.forEach(obs => {
+            if (obs.x > -100 && obs.x < canvas.width + 100) {
+                ctx.fillStyle = '#d2143a';
+                if (obs.type === 0) {
+                    ctx.beginPath(); ctx.moveTo(obs.x, 550); ctx.lineTo(obs.x + obs.width/2, 550 - obs.height); ctx.lineTo(obs.x + obs.width, 550); ctx.closePath(); ctx.fill();
+                } else if (obs.type === 1) {
+                    ctx.fillStyle = '#7f8c8d'; ctx.fillRect(obs.x, 550 - 40, 40, 40); ctx.strokeRect(obs.x, 550 - 40, 40, 40);
+                } else if (obs.type === 2) {
+                    ctx.fillStyle = '#e74c3c';
+                    for(let k=0; k<2; k++) {
+                        ctx.beginPath(); ctx.moveTo(obs.x + (k*25), 550); ctx.lineTo(obs.x + 12.5 + (k*25), 550 - obs.height); ctx.lineTo(obs.x + 25 + (k*25), 550); ctx.closePath(); ctx.fill();
+                    }
+                }
+            }
+        });
+
+        if (finishLineX < canvas.width + 800) {
+            let flagX = finishLineX;
+            ctx.fillStyle = '#7f8c8d'; ctx.fillRect(flagX, 300, 8, 250);
+            ctx.fillStyle = '#cc0000'; ctx.fillRect(flagX + 8, 300, 120, 80);
+            ctx.fillStyle = '#ffff00'; ctx.font = '24px Arial'; ctx.fillText('☭', flagX + 20, 350);
+            for(let i=0; i<3; i++) {
+                let tX = finishLineX + 150 + (i * 180), tY = 510;
+                ctx.fillStyle = '#4b6584'; ctx.fillRect(tX, tY + 15, 100, 25); ctx.fillRect(tX + 15, tY, 60, 20);
+                ctx.fillStyle = '#2d3436'; ctx.fillRect(tX - 5, tY + 35, 110, 10);
+                ctx.fillStyle = '#4b6584'; ctx.fillRect(tX - 40, tY + 5, 40, 6);
+            }
+        }
+
+        ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(20, 20, 300, 40);
+        ctx.fillStyle = '#ffff00'; ctx.font = '20px sans-serif';
+        ctx.fillText(`Obstacole: ${Math.min(obstaclesPassed, totalObstaclesNeeded)} / ${totalObstaclesNeeded}`, 40, 46);
+    }
+
+    function startAuraMode() {
+        hideAllMenus(); stopMenuMusic();
+        currentMode = 'AURA'; gameActive = true;
+        auraTimer = 30; auraOrbsCollected = 0; fascistSpawnTimer = 0;
+        auraOrbs = []; enemies = []; enemyBullets = []; boss = null; bossRockets = []; visualEffects = [];
+
+        setupMobileUI('aura');
+
+        player = { x: canvas.width / 2, y: canvas.height / 2, radius: 25, speed: 5, hp: 50, maxHp: 50 };
+        for (let i = 0; i < 80; i++) spawnAuraOrb();
+        
+        lastTime = performance.now(); requestAnimationFrame(gameLoop);
+    }
+    window.startAuraMode = startAuraMode;
+
+    function spawnAuraOrb() {
+        auraOrbs.push({
+            x: Math.random() * (canvas.width - 60) + 30,
+            y: Math.random() * (canvas.height - 60) + 30,
+            radius: 12, pulse: Math.random() * 5
+        });
+    }
+
+    function spawnFascistSoldier() {
+        if (enemies.length >= 5) return;
+        let x, y;
+        if (Math.random() < 0.5) { x = Math.random() < 0.5 ? -30 : canvas.width + 30; y = Math.random() * canvas.height; } 
+        else { x = Math.random() * canvas.width; y = Math.random() < 0.5 ? -30 : canvas.height + 30; }
+
+        enemies.push({
+            x: x, y: y, radius: 20, speed: 0.4 + Math.random() * 0.3,
+            shootCooldown: Math.random() * 50 + 45, weaponType: Math.random() < 0.4 ? 'mitraliera' : 'pistol'
+        });
+    }
+
+    function updateAura(dt) {
+        auraTimer -= dt;
+        if (auraTimer <= 0) {
+            auraTimer = 0;
+            if (auraOrbsCollected >= 50) showWinScreen(); else showLoseScreen();
+            return;
+        }
+
+        let dx = 0, dy = 0;
+        if (keys['w'] || keys['arrowup']) dy -= 1;
+        if (keys['s'] || keys['arrowdown']) dy += 1;
+        if (keys['a'] || keys['arrowleft']) dx -= 1;
+        if (keys['d'] || keys['arrowright']) dx += 1;
+
+        if (dx !== 0 && dy !== 0) { dx *= 0.7071; dy *= 0.7071; }
+        player.x += dx * player.speed; player.y += dy * player.speed;
+
+        if (player.x < player.radius) player.x = player.radius;
+        if (player.x > canvas.width - player.radius) player.x = canvas.width - player.radius;
+        if (player.y < player.radius) player.y = player.radius;
+        if (player.y > canvas.height - player.radius) player.y = canvas.height - player.radius;
+
+        if (player.hp < player.maxHp) {
+            player.hp += (0.005 + (auraOrbsCollected * 0.0015));
+            if (player.hp > player.maxHp) player.hp = player.maxHp;
+        }
+
+        let steps = Math.floor(auraOrbsCollected / 25);
+        let magnetRadius = 0;
+        if (steps >= 1) {
+            magnetRadius = 45 + (steps * 10);
+        }
+
+        for (let i = auraOrbs.length - 1; i >= 0; i--) {
+            let orb = auraOrbs[i];
+            let dist = Math.hypot(player.x - orb.x, player.y - orb.y);
+            
+            if (magnetRadius > 0 && dist < magnetRadius) {
+                let angle = Math.atan2(player.y - orb.y, player.x - orb.x);
+                orb.x += Math.cos(angle) * 5;
+                orb.y += Math.sin(angle) * 5;
+            }
+
+            let collisionDist = Math.hypot(player.x - orb.x, player.y - orb.y);
+            if (collisionDist < player.radius + orb.radius) {
+                auraOrbs.splice(i, 1); auraOrbsCollected++;
+                play8BitPickupSound(); spawnAuraOrb();
+            }
+        }
+
+        fascistSpawnTimer += 1;
+        if (fascistSpawnTimer % 80 === 0 && enemies.length < 5) spawnFascistSoldier();
+
+        enemies.forEach(enemy => {
+            let angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
+            enemy.x += Math.cos(angle) * enemy.speed; enemy.y += Math.sin(angle) * enemy.speed;
+            enemy.shootCooldown--;
+            if (enemy.shootCooldown <= 0) {
+                enemyBullets.push({ x: enemy.x, y: enemy.y, vx: Math.cos(angle) * 6, vy: Math.sin(angle) * 6, radius: 4 });
+                if (enemy.weaponType === 'mitraliera') {
+                    sndNaziRifle.currentTime = 0; sndNaziRifle.play().catch(e=>e); enemy.shootCooldown = 40; 
+                } else {
+                    sndGun.currentTime = 0; sndGun.play().catch(e=>e); enemy.shootCooldown = 85; 
+                }
+            }
+        });
+
+        for (let i = enemyBullets.length - 1; i >= 0; i--) {
+            let b = enemyBullets[i]; b.x += b.vx; b.y += b.vy;
+            if (Math.hypot(player.x - b.x, player.y - b.y) < player.radius + b.radius) {
+                player.hp -= 4; enemyBullets.splice(i, 1);
+                if (player.hp <= 0) { showLoseScreen(); return; }
+                continue;
+            }
+            if (b.x < 0 || b.x > canvas.width || b.y < 0 || b.y > canvas.height) enemyBullets.splice(i, 1);
+        }
+
+        if (auraTimer <= 10) {
+            if (!boss) boss = { x: canvas.width/2 - 50, y: -120, width: 130, height: 100, targetY: 150, speed: 2.5, direction: 'left', lastSlashTime: 0, lastRocketTime: 0 };
+            
+            if (boss.y < boss.targetY && auraTimer > 9) { boss.y += 4; } 
+            else {
+                let bX = boss.x + boss.width/2, bY = boss.y + boss.height/2;
+                let diffX = player.x - bX, diffY = player.y - bY;
+                let angle = Math.atan2(diffY, diffX);
+                boss.x += Math.cos(angle) * boss.speed; boss.y += Math.sin(angle) * boss.speed;
+                boss.direction = (diffX < 0) ? 'left' : 'right';
+
+                let dist = Math.hypot(diffX, diffY), now = performance.now();
+                if (dist < 95) {
+                    if (now - boss.lastSlashTime > 1200) { 
+                        player.hp -= 15; boss.lastSlashTime = now;
+                        visualEffects.push({ type: 'slash', x: player.x, y: player.y, duration: 15 });
+                        if (player.hp <= 0) { showLoseScreen(); return; }
+                    }
+                } else {
+                    if (now - boss.lastRocketTime > 2000) { 
+                        boss.lastRocketTime = now;
+                        bossRockets.push({ x: bX, y: bY, vx: Math.cos(angle)*7.5, vy: Math.sin(angle)*7.5, width: 25, height: 12, angle: angle });
+                    }
+                }
+            }
+        }
+
+        for (let i = bossRockets.length - 1; i >= 0; i--) {
+            let r = bossRockets[i]; r.x += r.vx; r.y += r.vy;
+            if (Math.hypot(player.x - r.x, player.y - r.y) < player.radius + 10) {
+                player.hp -= 20; bossRockets.splice(i, 1);
+                sndExplosionRocket.currentTime = 0; sndExplosionRocket.play().catch(e=>e);
+                visualEffects.push({ type: 'explosion', x: r.x, y: r.y, duration: 20 });
+                if (player.hp <= 0) { showLoseScreen(); return; }
+                continue;
+            }
+            if (r.x < -50 || r.x > canvas.width+50 || r.y < -50 || r.y > canvas.height+50) bossRockets.splice(i, 1);
+        }
+
+        for (let i = visualEffects.length - 1; i >= 0; i--) {
+            visualEffects[i].duration--;
+            if (visualEffects[i].duration <= 0) visualEffects.splice(i, 1);
+        }
+    }
+
+    function drawAura() {
+        ctx.fillStyle = '#112211'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = 'rgba(255,255,255,0.03)'; ctx.lineWidth = 1;
+        for (let i = 0; i < canvas.width; i += 40) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
+        for (let j = 0; j < canvas.height; j += 40) { ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke(); }
+
+        auraOrbs.forEach(orb => {
+            orb.pulse += 0.08; let gSize = orb.radius + Math.sin(orb.pulse)*3;
+            ctx.save(); ctx.shadowBlur = 12; ctx.shadowColor = '#ffff00'; ctx.fillStyle = '#ffff33';
+            ctx.beginPath(); ctx.arc(orb.x, orb.y, gSize, 0, Math.PI*2); ctx.fill(); ctx.restore();
+        });
+
+        ctx.save();
+        let intensity = Math.min(auraOrbsCollected * 1.5, 50);
+        if (intensity > 0) { ctx.shadowBlur = intensity; ctx.shadowColor = '#ffff00'; }
+
+        ctx.fillStyle = '#2ecc71'; ctx.beginPath(); ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#ffff00'; ctx.lineWidth = Math.min(1 + (auraOrbsCollected / 12), 6); ctx.stroke();
+        ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(player.x - 7, player.y - 5, 6, 0, Math.PI*2); ctx.arc(player.x + 7, player.y - 5, 6, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = 'black'; ctx.beginPath(); ctx.arc(player.x - 7, player.y - 5, 2.5, 0, Math.PI*2); ctx.arc(player.x + 7, player.y - 5, 2.5, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+
+        let steps = Math.floor(auraOrbsCollected / 25);
+        if (steps >= 1) {
+            let currentMagRadius = 45 + (steps * 10);
+            ctx.strokeStyle = 'rgba(255, 255, 0, 0.15)'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.arc(player.x, player.y, currentMagRadius, 0, Math.PI*2); ctx.stroke();
+        }
+
+        enemies.forEach(enemy => {
+            ctx.fillStyle = '#2c3e50'; ctx.beginPath(); ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#1e272e'; ctx.fillRect(enemy.x - 18, enemy.y - 22, 36, 10);
+            ctx.fillStyle = '#7f8c8d';
+            if (enemy.weaponType === 'mitraliera') ctx.fillRect(enemy.x, enemy.y, 24, 6); else ctx.fillRect(enemy.x, enemy.y, 14, 5);
+        });
+
+        ctx.fillStyle = '#ff3f34';
+        enemyBullets.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2); ctx.fill(); });
+
+        if (boss) {
+            let img = (boss.direction === 'left') ? bossLeftImg : bossRightImg;
+            if (img.complete && img.naturalWidth !== 0) ctx.drawImage(img, boss.x, boss.y, boss.width, boss.height);
+            else {
+                ctx.fillStyle = '#27ae60'; ctx.beginPath(); ctx.arc(boss.x + boss.width/2, boss.y + boss.height/2, boss.width/2, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#000'; ctx.fillRect(boss.x, boss.y, boss.width, 22);
+            }
+        }
+
+        bossRockets.forEach(r => {
+            ctx.save(); ctx.translate(r.x, r.y); ctx.rotate(r.angle);
+            ctx.fillStyle = '#8395a7'; ctx.fillRect(-r.width/2, -r.height/2, r.width, r.height);
+            ctx.fillStyle = '#26de81'; ctx.beginPath(); ctx.moveTo(r.width/2, -r.height/2); ctx.lineTo(r.width/2 + 10, 0); ctx.lineTo(r.width/2, r.height/2); ctx.closePath(); ctx.fill();
+            ctx.restore();
+        });
+
+        visualEffects.forEach(fx => {
+            if (fx.type === 'slash') {
+                ctx.strokeStyle = 'rgba(255,0,0,0.85)'; ctx.lineWidth = 6;
+                ctx.beginPath(); ctx.arc(fx.x, fx.y, 45, 0.2, Math.PI - 0.2); ctx.stroke();
+            } else if (fx.type === 'explosion') {
+                ctx.fillStyle = `rgba(245, 80, 35, ${fx.duration / 20})`;
+                ctx.beginPath(); ctx.arc(fx.x, fx.y, 45, 0, Math.PI * 2); ctx.fill();
+            }
+        });
+
+        ctx.fillStyle = '#333'; ctx.fillRect(30, 30, 250, 25);
+        let hpW = (player.hp / player.maxHp) * 250; if (hpW < 0) hpW = 0;
+        ctx.fillStyle = '#ff2a2a'; ctx.fillRect(30, 30, hpW, 25);
+        ctx.strokeStyle = '#fff'; ctx.strokeRect(30, 30, 250, 25);
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 14px sans-serif'; ctx.fillText(`HP: ${Math.ceil(player.hp)}/50`, 40, 48);
+
+        ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(30, 65, 250, 35);
+        ctx.fillStyle = '#ffff00'; ctx.font = 'bold 18px sans-serif'; ctx.fillText(`Aura Orbs: ${auraOrbsCollected} / 50`, 45, 90);
+
+        ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(canvas.width - 180, 30, 150, 50);
+        ctx.fillStyle = (auraTimer <= 10) ? '#ff3333' : '#00ffcc'; ctx.font = 'bold 26px monospace';
+        ctx.fillText(`${auraTimer.toFixed(1)}s`, canvas.width - 145, 65);
+
+        if (auraTimer <= 10 && auraTimer > 7) {
+            ctx.fillStyle = '#ff0000'; ctx.font = 'bold 32px sans-serif'; ctx.textAlign = 'center';
+            ctx.fillText('A ATACAT BOSS-UL HETES!', canvas.width / 2, 280); ctx.textAlign = 'left'; 
+        }
+    }
+
+    function gameLoop(timestamp) {
+        if (!gameActive) return;
+        let dt = (timestamp - lastTime) / 1000;
+        if (dt > 0.1) dt = 0.1; 
+        lastTime = timestamp;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (currentMode === 'CLASSIC') { updateClassic(dt); drawClassic(); } 
+        else if (currentMode === 'AURA') { updateAura(dt); drawAura(); }
+        requestAnimationFrame(gameLoop);
+    }
+
+    function checkCollision(r1, r2) {
+        return r1.x < r2.x + r2.width && r1.x + r1.width > r2.x && r1.y < r2.y + r2.height && r1.y + r1.height > r2.y;
+    }
+
+    function isMobileDevice() {
+        return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    }
+
+    function setupMobileUI(mode) {
+        if (!isMobileDevice()) return;
+        const container = document.getElementById('mobile-controls');
+        container.style.display = 'block';
+
+        document.getElementById('mob-classic-controls').classList.add('hidden');
+        document.getElementById('mob-aura-controls').classList.add('hidden');
+        document.getElementById('mob-shooter-controls').classList.add('hidden');
+
+        if (mode === 'classic') {
+            document.getElementById('mob-classic-controls').classList.remove('hidden');
+            bindTouchBtn('mob-classic-jump', 'w');
+        } else if (mode === 'aura') {
+            document.getElementById('mob-aura-controls').classList.remove('hidden');
+            bindTouchBtn('mob-aura-up', 'arrowup');
+            bindTouchBtn('mob-aura-down', 'arrowdown');
+            bindTouchBtn('mob-aura-left', 'arrowleft');
+            bindTouchBtn('mob-aura-right', 'arrowright');
+        } else if (mode === 'shooter') {
+            document.getElementById('mob-shooter-controls').classList.remove('hidden');
+            bindTouchBtn('mob-sh-w', 'w');
+            bindTouchBtn('mob-sh-s', 's');
+            bindTouchBtn('mob-sh-a', 'a');
+            bindTouchBtn('mob-sh-d', 'd');
+            
+            const fireBtn = document.getElementById('mob-sh-fire');
+            fireBtn.ontouchstart = (e) => { e.preventDefault(); window.mobileShooterFire = true; };
+            fireBtn.ontouchend = (e) => { e.preventDefault(); window.mobileShooterFire = false; };
+
+            const abBtn = document.getElementById('mob-sh-ability');
+            abBtn.onclick = () => { if(window.triggerMobileAbility) window.triggerMobileAbility(); };
+
+            const katBtn = document.getElementById('mob-sh-katyusha');
+            if (shooterGameType === 'stalingrad') {
+                katBtn.style.display = 'flex';
+                katBtn.onclick = () => { if(window.triggerMobileKatyusha) window.triggerMobileKatyusha(); };
+            } else {
+                katBtn.style.display = 'none';
+            }
+        }
+    }
+
+    function bindTouchBtn(elementId, keyName) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        el.ontouchstart = (e) => { e.preventDefault(); keys[keyName] = true; el.classList.add('pressed'); };
+        el.ontouchend = (e) => { e.preventDefault(); keys[keyName] = false; el.classList.remove('pressed'); };
+    }
+
+    window.setupMobileShooterUI = () => setupMobileUI('shooter');
+</script>
+
+<script src="shooter.js"></script>
+<script src="gulag.js"></script>
+</body>
+</html>
